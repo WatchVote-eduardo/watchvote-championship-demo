@@ -15,8 +15,9 @@ const crest=c=>`<span class="crest" aria-hidden="true">${c?.logo?`<img src="${es
 const badge=()=>`<span class="phase-pill">${esc(label(phase))} · 2027</span>`;
 const action=(text,hash,kind='')=>`<a class="button ${kind}" href="#${hash}">${text}<span aria-hidden="true">↗</span></a>`;
 function toast(message) { clearTimeout(toastTimer); $('#toast').textContent=message; toastTimer=setTimeout(()=>$('#toast').textContent='',6000); }
-function persist() { const error=saveState(storage,state); if(error && error!==storageWarning) {storageWarning=error;toast(error);} }
-function preparePublicPhase(){try{preparePhase(state,phase);}catch(error){toast(`The fictional bracket could not be prepared: ${error.message}`);}}
+function persist() { if(!demo)return;const error=saveState(storage,state); if(error && error!==storageWarning) {storageWarning=error;toast(error);} }
+// Public calendar previews are projections, never published admin state.
+function preparePublicPhase(){state=loadState(storage).state;phase=E.phaseAt(state.tournament);try{preparePhase(state,phase);}catch(error){toast(`The fictional bracket could not be prepared: ${error.message}`);}}
 function dialog(html) { $('#modal-body').innerHTML=html; $('#modal').showModal(); }
 $('#modal .close').onclick=()=>$('#modal').close();
 function canAdmin(){return demo && role==='wv-admin';}
@@ -151,7 +152,9 @@ function bind(){
     const logoData=await readLogo(logo.files[0]);
     if(!form.isConnected)return;
     if(phase!=='registration')throw Error('Registration is closed in this phase.');
-    receivedApplication=saveApplication(state,storage,{...data,logo:logoData},now());location.hash='application-received';
+    const applicationState=loadState(storage).state;
+    if(!demo&&E.phaseAt(applicationState.tournament)!=='registration')throw Error('Registration is closed in this phase.');
+    receivedApplication=saveApplication(applicationState,storage,{...data,logo:logoData},now());state=applicationState;location.hash='application-received';
    }catch(error){if(form.isConnected){errorBox.textContent=error.message;errorBox.hidden=false;errorBox.focus();}}
    finally{submitting=false;button.disabled=false;button.textContent='Send demo application ↗';}
   };
@@ -164,4 +167,4 @@ let touchX=null;$('#content').addEventListener('touchstart',e=>{touchX=e.touches
 if(!demo)preparePublicPhase();
 persist();render();if(loaded.error)toast(loaded.error);
 if(['#how-it-works','#explainer'].includes(location.hash))$(location.hash)?.scrollIntoView();
-setInterval(()=>{if(!demo){const nextPhase=E.phaseAt(state.tournament);if(nextPhase!==phase){phase=nextPhase;preparePublicPhase();persist();render();return;}}document.querySelectorAll('[data-countdown]').forEach(el=>el.innerHTML=countdown(el.dataset.countdown==='true'));},15000);
+setInterval(()=>{if(!demo){const nextPhase=E.phaseAt(state.tournament);if(nextPhase!==phase){preparePublicPhase();render();return;}}document.querySelectorAll('[data-countdown]').forEach(el=>el.innerHTML=countdown(el.dataset.countdown==='true'));},15000);
