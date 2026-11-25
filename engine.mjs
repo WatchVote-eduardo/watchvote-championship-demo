@@ -166,6 +166,8 @@ export function arenaVote(state,accountId,matchupId,choice,now) {
   const reason=arenaEligibility(state,accountId,match,now);
   if (reason) fail(reason);
   if (!['A','B'].includes(choice)) fail('Choose Shot A or Shot B.');
+  const chosenClub=choice==='A'?match.clubA:match.clubB;
+  if (!state.draw.picks[chosenClub]?.[match.theme]) fail('This club has no approved shot for this matchup.');
   state.arenaVotes.push({accountId,matchupId,choice,timestamp:now});
 }
 export function closeMatch(state,matchupId,{now,coin} = {}) {

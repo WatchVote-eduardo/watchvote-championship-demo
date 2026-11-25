@@ -99,6 +99,11 @@ test('neutral voting rejects either club roster, but can be switched off',()=>{
  for(const id of [m.clubA,m.clubB])assert.throws(()=>E.arenaVote(s,`${id}-member-0`,m.id,'A',time),/Neutral voting/);
  s.tournament.settings.neutralVoting=false;E.arenaVote(s,`${m.clubA}-member-0`,m.id,'A',time);assert.equal(s.arenaVotes.length,1);
 });
+test('optional category coverage never allows voting for a nonexistent shot',()=>{
+ const [s,m]=openMatch();s.tournament.settings.requireAllCategories=false;delete s.draw.picks[m.clubA][m.theme];
+ assert.throws(()=>E.arenaVote(s,'community-voter',m.id,'A',previewNow(s,m.round)),/no approved shot/);
+ E.arenaVote(s,'community-voter',m.id,'B',previewNow(s,m.round));assert.equal(s.arenaVotes.length,1);
+});
 test('minimum account age and Arena voting windows are enforced',()=>{
  const [s,m]=openMatch();s.tournament.settings.minimumAccountAgeDays=1000;
  assert.throws(()=>E.arenaVote(s,'community-voter',m.id,'A',previewNow(s,m.round)),/1000 days/);
