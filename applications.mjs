@@ -1,4 +1,5 @@
 import {escapeXML as esc} from './explainer.mjs';
+import {saveState} from './mock.mjs';
 export function applicationForm(){
   return `<form id="application-form" class="panel application-form"><p class="notice">This is a demo application. Use fictional details. Nothing is emailed or sent to WatchVote.</p><div class="form-errors" role="alert" tabindex="-1" hidden></div><fieldset><legend>01 / Your club</legend><div class="form-grid">${[['name','Club name','text','Meridian Watch Circle'],['country','Country','text','United Kingdom'],['city','City','text','London'],['members','Approximate member count','number','18']].map(([name,title,type,placeholder])=>`<label class="field">${title}<input name="${name}" type="${type}" ${type==='number'?'min="1" max="100000" step="1"':'maxlength="120"'} placeholder="${placeholder}" required></label>`).join('')}</div><label class="field">Club Instagram <span class="micro">Optional · @handle or instagram.com profile link</span><input name="instagram" type="text" maxlength="160" placeholder="@yourwatchclub"></label><label class="field">Short club description <span class="micro">Up to 280 characters</span><textarea name="description" maxlength="280" rows="4" required aria-describedby="description-count"></textarea><span class="micro" id="description-count">0 / 280</span></label><label class="field">Club logo <span class="micro">Optional · JPG, PNG or WebP · up to 2 MB</span><input name="logo" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="logo-help"></label><p class="micro" id="logo-help">No logo yet? Your club will use a monogram crest.</p><img class="logo-preview" alt="Your chosen club logo preview" hidden></fieldset><fieldset><legend>02 / The founder</legend><div class="form-grid"><label class="field">Founder name<input name="founder" autocomplete="off" maxlength="120" required></label><label class="field">Founder email<input name="email" type="email" autocomplete="off" maxlength="254" placeholder="collector@example.com" required></label></div><p class="micro">In the finished championship, approved founders become Club Admins and receive a private Hub invitation. Full WatchVote registration will be required.</p></fieldset><button class="button" type="submit">Send demo application <span aria-hidden="true">↗</span></button></form>`;
 }
@@ -14,6 +15,13 @@ export function validateApplication(values){
   if(!Number.isInteger(data.members)||data.members<1||data.members>100000)errors.members='Enter a whole member count from 1 to 100,000.';
   if(data.instagram&&!/^(?:@[\w.]{1,30}|(?:https?:\/\/)?(?:www\.)?instagram\.com\/[\w.]{1,30}\/?(?:\?[^\s]*)?)$/i.test(data.instagram))errors.instagram='Use an @handle or an Instagram profile link.';
   return {data,errors};
+}
+export function saveApplication(state,storage,data,submittedAt){
+  const application={...data,id:`WV-2027-${state.nextId}`,submittedAt,status:'applied'};
+  state.applications.push(application);state.nextId++;
+  const error=saveState(storage,state);
+  if(error){state.applications.pop();state.nextId--;throw Error('Your application was not saved because browser storage is unavailable or full. Your details are still in this form. Free up browser storage or try another browser, then submit again.');}
+  return application;
 }
 export async function readLogo(file){
   if(!file?.size)return null;

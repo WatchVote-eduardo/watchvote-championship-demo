@@ -1,7 +1,7 @@
 import * as E from './engine.mjs';
 import {createMock,loadState,saveState,STORAGE_KEY,previewNow,preparePhase,simulateVotes} from './mock.mjs';
 import {explainerMarkup,mountExplainer} from './explainer-player.mjs';
-import {applicationForm,validateApplication,readLogo,applicationConfirmation} from './applications.mjs';
+import {applicationForm,validateApplication,readLogo,applicationConfirmation,saveApplication} from './applications.mjs';
 const $=s=>document.querySelector(s), demo=new URLSearchParams(location.search).get('demo')==='1';
 const storage={getItem:k=>localStorage.getItem(k),setItem:(k,v)=>localStorage.setItem(k,v)};
 let loaded=loadState(storage), state=loaded.state, phase=E.phaseAt(state.tournament), role='guest', clubId=state.clubs[0].id, selectedRound=null;
@@ -151,7 +151,7 @@ function bind(){
     const logoData=await readLogo(logo.files[0]);
     if(!form.isConnected)return;
     if(phase!=='registration')throw Error('Registration is closed in this phase.');
-    receivedApplication={...data,logo:logoData,id:`WV-2027-${state.nextId++}`,submittedAt:now(),status:'applied'};state.applications.push(receivedApplication);persist();location.hash='application-received';
+    receivedApplication=saveApplication(state,storage,{...data,logo:logoData},now());location.hash='application-received';
    }catch(error){if(form.isConnected){errorBox.textContent=error.message;errorBox.hidden=false;errorBox.focus();}}
    finally{submitting=false;button.disabled=false;button.textContent='Send demo application ↗';}
   };
