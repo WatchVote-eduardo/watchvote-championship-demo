@@ -58,7 +58,7 @@ npm run export:instagram -- --cta="Enter your club"
 
 The player starts muted on first scroll into view, pauses when out of view or when the tab is hidden, and rests on the final frame rather than looping. Scene chips and the timeline seek while paused; Replay restarts playback. With reduced motion, all seven illustrations and captions are static, including a list of the round themes. An optional future voiceover can be passed as `voiceoverSrc` to `mountExplainer`; its sound control only appears when a track is supplied. No audio permission or remote service is needed.
 
-The landing countdown targets the next phase opening and refreshes every 15 seconds without restarting the explainer. Phase changes, timeline highlights, themes, cutoff and FAQ rules follow the tournament engine and saved admin settings. The Get notified preview offers a calendar download; it does not claim to send email.
+The landing countdown targets the next phase opening and refreshes every 15 seconds without restarting the explainer. Phase changes, timeline highlights, themes, cutoff and FAQ rules follow the tournament engine and saved admin settings. On and after Draw day, public mode prepares the fictional draw and simulates closed rounds, so a new visitor also gets the bracket and champion preview without opening demo controls. These are mock results, not a live tournament. The Get notified preview offers a calendar download; it does not claim to send email.
 
 ## Hosting and review
 

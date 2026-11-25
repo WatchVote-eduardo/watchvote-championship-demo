@@ -16,6 +16,7 @@ const badge=()=>`<span class="phase-pill">${esc(label(phase))} · 2027</span>`;
 const action=(text,hash,kind='')=>`<a class="button ${kind}" href="#${hash}">${text}<span aria-hidden="true">↗</span></a>`;
 function toast(message) { clearTimeout(toastTimer); $('#toast').textContent=message; toastTimer=setTimeout(()=>$('#toast').textContent='',6000); }
 function persist() { const error=saveState(storage,state); if(error && error!==storageWarning) {storageWarning=error;toast(error);} }
+function preparePublicPhase(){try{preparePhase(state,phase);}catch(error){toast(`The fictional bracket could not be prepared: ${error.message}`);}}
 function dialog(html) { $('#modal-body').innerHTML=html; $('#modal').showModal(); }
 $('#modal .close').onclick=()=>$('#modal').close();
 function canAdmin(){return demo && role==='wv-admin';}
@@ -160,6 +161,7 @@ function bind(){
 }
 window.addEventListener('hashchange',()=>{if(['#how-it-works','#explainer'].includes(location.hash)){if(!$(location.hash))render();$(location.hash)?.scrollIntoView();return;}render();window.scrollTo(0,0);$('#content').focus({preventScroll:true});});
 let touchX=null;$('#content').addEventListener('touchstart',e=>{touchX=e.touches[0].clientX;},{passive:true});$('#content').addEventListener('touchend',e=>{if(touchX===null||location.hash!=='#arena'||!state.draw)return;const diff=e.changedTouches[0].clientX-touchX;touchX=null;if(Math.abs(diff)>70){const rounds=state.draw.rounds,i=rounds.findIndex(r=>r.id===selectedRound),next=rounds[i+(diff<0?1:-1)];if(next){selectedRound=next.id;render();}}},{passive:true});
+if(!demo)preparePublicPhase();
 persist();render();if(loaded.error)toast(loaded.error);
 if(['#how-it-works','#explainer'].includes(location.hash))$(location.hash)?.scrollIntoView();
-setInterval(()=>{if(!demo){const nextPhase=E.phaseAt(state.tournament);if(nextPhase!==phase){phase=nextPhase;render();return;}}document.querySelectorAll('[data-countdown]').forEach(el=>el.innerHTML=countdown(el.dataset.countdown==='true'));},15000);
+setInterval(()=>{if(!demo){const nextPhase=E.phaseAt(state.tournament);if(nextPhase!==phase){phase=nextPhase;preparePublicPhase();persist();render();return;}}document.querySelectorAll('[data-countdown]').forEach(el=>el.innerHTML=countdown(el.dataset.countdown==='true'));},15000);
