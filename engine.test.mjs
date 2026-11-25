@@ -169,3 +169,11 @@ test('state round-trips through storage and recovers from malformed or unavailab
  assert(saveState({setItem(){throw Error('denied');}},s));
  assert(loadState({getItem(){throw Error('denied');}}).error);
 });
+test('short edited voting windows still produce valid simulated votes before advancing',()=>{
+ const s=createMock(),round=s.tournament.schedule.find(p=>p.id==='r16');
+ round.closesAt=new Date(Date.parse(round.opensAt)+3600000).toISOString();
+ assert(Date.parse(previewNow(s,'r16'))>Date.parse(round.opensAt));
+ assert(Date.parse(previewNow(s,'r16'))<Date.parse(round.closesAt));
+ preparePhase(s,'quarterfinals');
+ for(const match of s.draw.rounds[0].matches){assert(match.closed);assert.equal(match.votesA+match.votesB,25);}
+});
