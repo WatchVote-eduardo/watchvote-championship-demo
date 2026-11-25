@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="description" content="Clubs compete. The world votes. One club is crowned. Explore the 2027 WatchVote World Championship of Watch Clubs demo.">
+ <meta name="theme-color" content="#0e152a"><title>World Championship of Watch Clubs · WatchVote</title>
+ <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+ <link rel="preload" href="assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+ <link rel="preload" href="assets/fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+ <link rel="stylesheet" href="trivia.css"><link rel="stylesheet" href="championship.css">
+ <script type="module" src="app.mjs"></script>
+</head>
+<body class="wv-trivia">
+ <a class="skip" href="#content">Skip to content</a>
+ <header class="wv-trivia__masthead">
+  <p class="wv-trivia__tagline">The world of watches. The voice of collectors.</p>
+  <div class="wv-trivia__brand"><a class="wv-trivia__wordmark" href="#home" aria-label="WatchVote by Collectors"><span aria-hidden="true">WATCH<b>V<svg viewBox="0 0 24 24" focusable="false"><path d="M9 2h6m4 3 2-2M12 6v2m7 5h-2m-5 7v-2M5 13h2" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"/><circle cx="12" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m8.5 13 2.4 2.4L16 10" fill="none" stroke="var(--wv-accent)" stroke-width="1.7"/></svg>TE</b></span><small>By Collectors.</small></a></div>
+  <nav class="main-nav" aria-label="Championship"><a href="#home">Championship</a><a href="#arena">World Arena</a><a href="#clubs">The clubs</a><a href="#hub">My club</a><a href="#admin" id="admin-link" hidden>Admin</a></nav>
+ </header>
+ <main id="content" tabindex="-1"><noscript><div class="notice">Enable JavaScript to explore this front-end demo.</div></noscript></main>
+ <footer><a class="footer-brand" href="#home">WATCH<b>VOTE</b></a><p>Time brings us together.</p><small>2027 front-end demo · Fictional clubs · Browser-only data<br>Original watch illustrations, not photographs. No connection to real WatchVote accounts.</small><a href="https://github.com/WatchVote-eduardo/watchvote-championship-demo">View the project ↗</a></footer>
+ <aside id="demo-toolbar" hidden aria-label="Demo controls"></aside>
+ <div id="toast" role="status" aria-live="polite"></div>
+ <dialog id="modal" aria-labelledby="modal-title"><button class="close" aria-label="Close dialog">×</button><div id="modal-body"></div></dialog>
+</body></html>
