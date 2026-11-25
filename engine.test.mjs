@@ -132,6 +132,11 @@ test('mock data contains the required international clubs, registered rosters, i
  for(const c of s.clubs){const roster=s.memberships.filter(m=>m.clubId===c.id);assert(roster.length>=12&&roster.length<=25);assert(roster.every(m=>s.accounts.find(a=>a.id===m.accountId).fullyRegistered));assert.equal(Object.keys(E.clubPicks(s,c.id)).length,4);}
  assert(s.submissions.every(x=>x.productionYear&&x.image.startsWith('assets/')));
 });
+test('champion uses the configured final theme and tolerates a missing optional pick',()=>{
+ const s=createMock();s.tournament.themes=['independent','vintage','mainstream','open'];preparePhase(s,'champion');
+ const result=E.championResult(s);assert.equal(result.theme,'open');assert.equal(result.shot.category,'open');
+ delete s.draw.picks[result.clubId].open;assert.equal(E.championResult(s).shot,null);
+});
 test('state round-trips through storage and recovers from malformed or unavailable storage',()=>{
  const map=new Map(),storage={getItem:k=>map.get(k),setItem:(k,v)=>map.set(k,v)},s=createMock();
  assert.equal(saveState(storage,s),null);assert.deepEqual(loadState(storage).state,s);

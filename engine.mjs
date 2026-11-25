@@ -137,6 +137,11 @@ export function seededDraw(state, seed, {dryRun=false} = {}) {
   return draw;
 }
 export function allMatches(draw) { return draw?.rounds.flatMap(r=>r.matches) || []; }
+export function championResult(state) {
+  const final=state.draw?.rounds.at(-1)?.matches[0];
+  if (!final?.closed || !final.winner) return null;
+  return {clubId:final.winner,theme:final.theme,shot:state.draw.picks[final.winner]?.[final.theme] || null};
+}
 function advanceByes(draw) {
   const matches = allMatches(draw);
   for (const m of matches) {
