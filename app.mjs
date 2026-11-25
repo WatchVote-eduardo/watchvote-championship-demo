@@ -23,20 +23,29 @@ $('#modal .close').onclick=()=>$('#modal').close();
 function canAdmin(){return demo && role==='wv-admin';}
 function dial(titleId='dial-title') {
  const slots=state.draw?.slots || state.clubs.filter(c=>c.status==='approved').map(c=>c.id);
- const size=slots.length, rings=[218,169,120,72];
+ const size=slots.length, rings=[218,184,150,116];
  const pt=(r,angle)=>[300+r*Math.sin(angle),300-r*Math.cos(angle)];
  let shapes=rings.map(r=>`<circle class="ring" cx="300" cy="300" r="${r}"/>`).join('');
  for(let i=0;i<60;i++){const a=i/60*Math.PI*2,[x,y]=pt(268,a),[xx,yy]=pt(i%5?273:278,a);shapes+=`<path class="tick" d="M${x} ${y}L${xx} ${yy}"/>`;}
  for(let i=0;i<size;i++){
-   const angle=i/size*Math.PI*2, [x,y]=pt(242,angle),[xx,yy]=pt(218,angle),[ix,iy]=pt(169,(Math.floor(i/2)*2+.5)/size*Math.PI*2), c=club(slots[i]);
+   const angle=i/size*Math.PI*2, [x,y]=pt(242,angle),[xx,yy]=pt(218,angle),[ix,iy]=pt(rings[1],(Math.floor(i/2)*2+.5)/size*Math.PI*2), c=club(slots[i]);
    shapes+=`<path class="connector" d="M${xx} ${yy}L${ix} ${iy}"/><g><title>${esc(c?.name||'Bye')}</title><circle class="crest-circle" cx="${x}" cy="${y}" r="18"/><text class="crest-text" x="${x}" y="${y+3}" text-anchor="middle">${esc(c?.monogram||'—')}</text></g>`;
  }
  const final=state.draw?.rounds.at(-1)?.matches[0], champion=final?.winner?club(final.winner):null;
  for(const [ri,round] of (state.draw?.rounds||[]).entries()){
+   // The champion is named in the center, not repeated in a crest over its title.
+   if(round.id==='final')continue;
    const radius=rings[Math.min(ri+1,3)];
    round.matches.forEach((m,i)=>{const angle=(i+.5)/round.matches.length*Math.PI*2,[x,y]=pt(radius,angle);if(m.winner) shapes+=`<g><title>${esc(club(m.winner)?.name)} advanced</title><circle class="crest-circle" cx="${x}" cy="${y}" r="14"/><text class="crest-text" x="${x}" y="${y+3}" text-anchor="middle">${esc(club(m.winner)?.monogram)}</text></g>`;});
  }
- return `<svg class="dial" viewBox="0 0 600 600" role="img" aria-labelledby="${titleId}"><title id="${titleId}">${champion?esc(champion.name)+' is World Champion':'Championship dial: clubs around the rim, each round one ring inward'}</title>${shapes}<text class="dial-caption" x="300" y="191" text-anchor="middle">${state.draw?'THE WORLD ARENA':'SIXTEEN CLUBS'}</text><text class="center-title" x="300" y="281" text-anchor="middle">${champion?esc(champion.monogram):'A world'}</text><text class="center-title" x="300" y="317" text-anchor="middle">${champion?'Champion':'of time.'}</text><circle class="${champion?'champion-pin':''}" cx="300" cy="350" r="3" fill="currentColor"/><text class="center-small" x="300" y="380" text-anchor="middle">${champion?'WORLD CHAMPION · 2027':'ONE WORLD CHAMPION'}</text><text class="dial-caption" x="300" y="427" text-anchor="middle">WATCHVOTE · 2027</text></svg>`;
+ return `<svg class="dial" viewBox="0 0 600 600" role="img" aria-labelledby="${titleId}">
+ <title id="${titleId}">${champion?esc(champion.name)+' is World Champion':'Championship dial: clubs around the rim, each round one ring inward'}</title>${shapes}
+ <text class="dial-caption" x="300" y="221" text-anchor="middle">${state.draw?'THE WORLD ARENA':'SIXTEEN CLUBS'}</text>
+ <text class="center-title" x="300" y="281" text-anchor="middle">${champion?esc(champion.monogram):'A world'}</text>
+ <text class="center-title" x="300" y="317" text-anchor="middle">${champion?'Champion':'of time.'}</text>
+ <circle class="${champion?'champion-pin':''}" cx="300" cy="350" r="3" fill="currentColor"/>
+ <text class="center-small" x="300" y="380" text-anchor="middle">${champion?'WORLD CHAMPION · 2027':'ONE WORLD CHAMPION'}</text>
+ <text class="dial-caption" x="300" y="427" text-anchor="middle">WATCHVOTE · 2027</text></svg>`;
 }
 function countdown(toNext=false) {
  const schedule=state.tournament.schedule, current=schedule.find(p=>p.id===phase);
