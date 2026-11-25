@@ -36,7 +36,7 @@ Data is saved under `watchvote-championship-v1` in localStorage. Refresh retains
 
 ## Hosting and review
 
-GitHub Pages serves the repository root, like the Daily Trivia demo. The review deployment may follow the PR branch so the demo can be reviewed without merging application code. After approval, change the Pages source to `main` after merging. The footer links to the source. All asset URLs are relative so a GitHub Pages project path works.
+GitHub Pages serves the repository root from `main`, like the Daily Trivia demo. The project owner merges the reviewed PR; GitHub Pages must be enabled in repository settings using **Deploy from a branch → main → / (root)**. The footer links to the source. All asset URLs are relative so a GitHub Pages project path works.
 
 ## Production boundary (programmer handoff preview)
 
