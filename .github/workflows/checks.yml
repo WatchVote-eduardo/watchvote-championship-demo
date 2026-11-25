@@ -11,4 +11,4 @@ jobs:
         with:
           node-version: '22'
       - run: npm test
-      - run: node --check app.mjs && node --check mock.mjs && node --check engine.mjs
+      - run: for file in *.mjs tools/*.mjs; do node --check "$file"; done

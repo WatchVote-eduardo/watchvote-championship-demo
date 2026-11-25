@@ -35,7 +35,9 @@ export function createMock() {
 }
 export function previewNow(state,phase) {
  const p=state.tournament.schedule.find(p=>p.id===phase);
- return new Date(Date.parse(p?.opensAt || state.tournament.schedule[0].opensAt)+12*3600000).toISOString();
+ const opens=Date.parse(p?.opensAt || state.tournament.schedule[0].opensAt);
+ const offset=p?.closesAt?Math.min(12*3600000,Math.max(0,(Date.parse(p.closesAt)-opens)/2)):12*3600000;
+ return new Date(opens+offset).toISOString();
 }
 export function preparePhase(state,phase) {
  const definitions=roundDefinitions(state.tournament.bracketSize,state.tournament.themes);
