@@ -13,6 +13,11 @@ for(const n of [8,12,16])test(`seeded draw with ${n} clubs is reproducible and p
  assert.notDeepEqual(a.slots,E.seededDraw(s,'different',{dryRun:true}).slots);
  E.seededDraw(s,'a');assert.throws(()=>E.seededDraw(s,'again'),/already published/);
 });
+test('publishing requires a dry run of the current eligible field and ballot picks',()=>{
+ const s=createMock();const preview=E.seededDraw(s,'preview',{dryRun:true});
+ s.clubs[0].status='withheld';assert.throws(()=>E.publishDraw(s,preview),/changed/);assert.equal(s.draw,null);
+ const fresh=E.seededDraw(s,'preview',{dryRun:true});E.publishDraw(s,fresh);assert.deepEqual(s.draw,fresh);
+});
 test('8 clubs drop Open, with the correct earlier Quarterfinal and Semifinal dates',()=>{
  assert.deepEqual(E.roundDefinitions(8).map(r=>r.theme),['vintage','mainstream','independent']);
  assert.deepEqual(E.roundDefinitions(16).map(r=>r.theme),E.CATEGORIES);
