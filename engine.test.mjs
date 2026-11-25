@@ -90,6 +90,14 @@ test('multiple winning categories per member is configurable',()=>{
  const s=createMock();s.hubVotes=[];assert.equal(Object.keys(E.clubPicks(s,'club-1')).length,4);
  s.tournament.settings.allowMultiplePicks=false;const picks=Object.values(E.clubPicks(s,'club-1'));assert.equal(new Set(picks.map(p=>p.accountId)).size,picks.length);
 });
+test('an unused Open pick cannot consume an eight-club representative',()=>{
+ const s=field(8);s.tournament.settings.allowMultiplePicks=false;s.hubVotes=[];
+ for(const c of s.clubs.filter(c=>c.status==='approved')){
+  assert(E.qualification(s,c.id).qualified);const picks=E.clubPicks(s,c.id);
+  assert(picks.vintage&&picks.mainstream&&picks.independent);
+ }
+ assert.doesNotThrow(()=>E.seededDraw(s,'eight-distinct'));
+});
 test('picks reveal only at their configured round; Open reveals at the Draw',()=>{
  const s=createMock();E.seededDraw(s,'sealed');
  for(const [cat,reveal] of [['open','draw'],['vintage','quarterfinals'],['mainstream','semifinals'],['independent','final']]){

@@ -86,7 +86,8 @@ export function hubVote(state, accountId, submissionId, now) {
 }
 export function clubPicks(state, clubId) {
   const picks = {}, selectedAccounts = new Set();
-  for (const category of CATEGORIES) {
+  const used=roundDefinitions(state.tournament.bracketSize,state.tournament.themes).map(r=>r.theme);
+  for (const category of [...used,...CATEGORIES.filter(c=>!used.includes(c))]) {
     const votes = state.hubVotes.filter(v=>v.clubId===clubId && v.category===category);
     const candidates = state.submissions.filter(s=>s.clubId===clubId && s.category===category && s.status==='approved' && (state.tournament.settings.allowMultiplePicks || !selectedAccounts.has(s.accountId)));
     candidates.sort((a,b)=>votes.filter(v=>v.submissionId===b.id).length-votes.filter(v=>v.submissionId===a.id).length || Date.parse(a.uploadedAt)-Date.parse(b.uploadedAt) || a.id.localeCompare(b.id));
