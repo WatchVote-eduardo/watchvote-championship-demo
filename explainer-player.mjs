@@ -1,4 +1,4 @@
-import {SCENES,DURATION,sceneAt,visualSVG,escapeXML,defaultRounds} from './explainer.mjs';
+import {SCENES,DURATION,sceneAt,visual,visualSVG,escapeXML,defaultRounds} from './explainer.mjs';
 
 export function explainerMarkup(options){
   const rounds=options.rounds||defaultRounds();
@@ -7,14 +7,16 @@ export function explainerMarkup(options){
 
 export function mountExplainer(root,options={}) {
   if(!root)return ()=>{};
-  const stage=root.querySelector('.explainer-stage'),play=root.querySelector('[data-play]'),seek=root.querySelector('[data-seek]'),caption=root.querySelector('[data-caption]'),chips=[...root.querySelectorAll('[data-scene]')],audio=root.querySelector('audio');
+  const frame=root.querySelector('.explainer-stage [data-explainer-frame]'),play=root.querySelector('[data-play]'),seek=root.querySelector('[data-seek]'),caption=root.querySelector('[data-caption]'),chips=[...root.querySelectorAll('[data-scene]')],audio=root.querySelector('audio');
   const motion=matchMedia('(prefers-reduced-motion: reduce)');
   let time=0,playing=false,wantsPlay=false,started=false,last=null,raf=0,visible=false,disposed=false,lastScene=-1;
   // Optional future voiceover: pass a same-origin audio URL; autoplay stays muted.
   if(options.voiceoverSrc){audio.src=options.voiceoverSrc;root.querySelector('[data-sound]').hidden=false;}
   const clock=t=>`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
   function paint(){
-    stage.innerHTML=visualSVG(time,options);
+    // Keep the SVG, its stylesheet and its layout box mounted during playback.
+    // Replacing them each frame can make WebKit re-follow the page's fragment.
+    frame.innerHTML=visual(time,options);
     const i=sceneAt(time);
     if(i!==lastScene){caption.textContent=SCENES[i].caption;root.querySelector('[data-scene-label]').textContent=`0${i+1} / 07 · ${SCENES[i].title}`;chips.forEach((c,j)=>c.setAttribute('aria-pressed',String(i===j)));lastScene=i;}
     seek.value=String(time);seek.setAttribute('aria-valuetext',`${Math.floor(time)} of 70 seconds`);root.querySelector('[data-time]').textContent=`${clock(time)} / 1:10`;
@@ -30,7 +32,7 @@ export function mountExplainer(root,options={}) {
   chips.forEach(c=>c.onclick=()=>jump(SCENES[Number(c.dataset.scene)].start,false));
   root.querySelector('[data-sound]').onclick=e=>{audio.muted=!audio.muted;e.target.textContent=audio.muted?'Sound off':'Sound on';e.target.setAttribute('aria-label',audio.muted?'Unmute voiceover':'Mute voiceover');};
   function preference(){root.classList.toggle('reduced-motion',motion.matches);if(motion.matches){wantsPlay=false;run(false);}}
-  function visibility(){run(wantsPlay&&visible&&!document.hidden);}
+  function visibility(){const shouldPlay=wantsPlay&&visible&&!document.hidden;if(shouldPlay!==playing)run(shouldPlay);}
   const observer=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible&&!started&&!motion.matches){started=true;wantsPlay=true;}visibility();},{threshold:.25});
   preference();paint();observer.observe(root.querySelector('.explainer-animation'));motion.addEventListener('change',preference);document.addEventListener('visibilitychange',visibility);
   return ()=>{disposed=true;cancelAnimationFrame(raf);observer.disconnect();motion.removeEventListener('change',preference);document.removeEventListener('visibilitychange',visibility);audio.pause();};
