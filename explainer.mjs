@@ -87,7 +87,7 @@ export function visual(time,{monograms=defaults,rounds=defaultRounds(),cta='Ente
   }
   return `<g font-family="WatchVote Jost, Jost, sans-serif" fill="${INK}">${body}</g>`;
 }
-export function visualSVG(time,options={}){return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 720" aria-hidden="true" focusable="false"><style>.display{font-family:'WatchVote Cormorant','Cormorant Garamond',Georgia,serif;font-weight:700}</style>${visual(time,options)}</svg>`;}
+export function visualSVG(time,options={}){return `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="720" viewBox="0 0 1080 720" aria-hidden="true" focusable="false"><style>.display{font-family:'WatchVote Cormorant','Cormorant Garamond',Georgia,serif;font-weight:700}</style><g data-explainer-frame>${visual(time,options)}</g></svg>`;}
 // Caption line breaks are deliberate, so both Instagram sizes remain readable.
 const captionLines=[['The World Championship','of Watch Clubs.'],['Clubs enter. Members join','their private Club Hub.'],['Members upload wrist shots','in four categories.'],['Seven days, members only.','Each club picks one shot','per category.'],['A random draw','sets the bracket.'],['A new theme every round.','The world votes, head to head.'],['One club.','World Champion.']];
 export function socialFrame(time,options={}){
