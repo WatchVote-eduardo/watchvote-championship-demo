@@ -30,7 +30,7 @@ Data is saved under `watchvote-championship-v1` in localStorage. Refresh retains
 - Defaults: blind and neutral voting on, live percentages hidden, 10-member minimum, 1996 cutoff, no account-age minimum, multiple category picks per member allowed. Eight-club fields omit Open; 9–15 use 16 slots with randomly placed byes.
 - Draw method: UTF-16 seed characters hashed by FNV-1a, then Mulberry32 and Fisher–Yates. It is deterministic and tested, **not a cryptographic fairness guarantee**. Production needs server-owned randomness and an audit trail.
 - Hub ties choose earliest upload. Arena ties use the winning shot's club-ballot share, then require an explicit recorded admin coin flip. The phase simulator supplies a documented deterministic A flip for simulated ties only.
-- Turning off the multiple-picks default assigns categories in configured category order, skipping an already-selected member. This is a mock policy to review before production.
+- Turning off the multiple-picks default assigns used categories in configured round order, skipping an already-selected member; unused categories are considered last. This is a mock policy to review before production.
 - A small demo application form and approval queue are included as previews; they do not yet create private invites or new founder accounts. Do not use real personal information.
 - Brand edits and cutoff edits affect new validations; existing approved mock shots are not silently reclassified. Moderation/reclassification belongs in the later admin review step.
 

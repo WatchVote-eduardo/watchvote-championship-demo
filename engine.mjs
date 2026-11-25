@@ -63,7 +63,7 @@ export function joinClub(state, accountId, clubId) {
   state.memberships.push({accountId,clubId,status:'pending',role:'member',roster:true});
 }
 export function approvedMember(state, accountId, clubId) {
-  return state.memberships.some(m=>m.accountId===accountId && m.clubId===clubId && m.status==='approved' && m.roster);
+  return Boolean(state.accounts.find(a=>a.id===accountId)?.fullyRegistered) && state.memberships.some(m=>m.accountId===accountId && m.clubId===clubId && m.status==='approved' && m.roster);
 }
 export function submitShot(state, shot, now) {
   if (!phaseIsOpen(state.tournament,'uploads',now)) fail('Uploads are closed.');
