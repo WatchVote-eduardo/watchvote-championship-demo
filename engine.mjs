@@ -137,8 +137,10 @@ export function seededDraw(state, seed, {dryRun=false} = {}) {
   return draw;
 }
 export function allMatches(draw) { return draw?.rounds.flatMap(r=>r.matches) || []; }
-export function publishDraw(state, preview) {
+export function publishDraw(state, preview, now) {
   if (!preview) fail('Run a dry run first.');
+  const close=state.tournament.schedule.find(p=>p.id==='club-vote')?.closesAt;
+  if (!now || !close || !Number.isFinite(Date.parse(now)) || Date.parse(now)<=Date.parse(close)) fail('The draw can be published only after club ballots close.');
   const current=seededDraw(state,preview.seed,{dryRun:true});
   if (JSON.stringify(current)!==JSON.stringify(preview)) fail('The eligible field or picks changed. Run a new dry run.');
   return seededDraw(state,preview.seed);

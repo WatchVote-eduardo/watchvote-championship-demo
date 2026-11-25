@@ -15,8 +15,15 @@ for(const n of [8,12,16])test(`seeded draw with ${n} clubs is reproducible and p
 });
 test('publishing requires a dry run of the current eligible field and ballot picks',()=>{
  const s=createMock();const preview=E.seededDraw(s,'preview',{dryRun:true});
- s.clubs[0].status='withheld';assert.throws(()=>E.publishDraw(s,preview),/changed/);assert.equal(s.draw,null);
- const fresh=E.seededDraw(s,'preview',{dryRun:true});E.publishDraw(s,fresh);assert.deepEqual(s.draw,fresh);
+ s.clubs[0].status='withheld';assert.throws(()=>E.publishDraw(s,preview,'2027-03-14T16:00:00Z'),/changed/);assert.equal(s.draw,null);
+ const fresh=E.seededDraw(s,'preview',{dryRun:true});E.publishDraw(s,fresh,'2027-03-14T16:00:00Z');assert.deepEqual(s.draw,fresh);
+});
+test('draw publication waits for club ballots to close and captures the final valid ballots',()=>{
+ const s=createMock(),preview=E.seededDraw(s,'closed',{dryRun:true});
+ assert.throws(()=>E.publishDraw(s,preview,voteTime),/ballots close/);assert.equal(s.draw,null);
+ s.hubVotes=[];E.hubVote(s,'club-1-member-0','club-1-open-2',voteTime);
+ const final=E.seededDraw(s,'closed',{dryRun:true});E.publishDraw(s,final,'2027-03-14T16:00:00Z');
+ assert.equal(s.draw.picks['club-1'].open.id,'club-1-open-2');assert.equal(s.draw.picks['club-1'].open.ballotShare,1);
 });
 test('8 clubs drop Open, with the correct earlier Quarterfinal and Semifinal dates',()=>{
  assert.deepEqual(E.roundDefinitions(8).map(r=>r.theme),['vintage','mainstream','independent']);
